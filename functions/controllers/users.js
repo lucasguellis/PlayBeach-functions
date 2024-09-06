@@ -1,11 +1,11 @@
 const db = require("../config/database");
-const {formatObjects} = require("../utils/snapshotFormatter");
+const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
 
 const collection = "users";
 
 exports.getAllUsers = async () => {
   const snapshot = await db.collection(collection).get();
-  return formatObjects(snapshot);
+  return formatObjectList(snapshot);
 };
 
 exports.getUsersByName = async (name) => {
@@ -13,5 +13,13 @@ exports.getUsersByName = async (name) => {
       .collection(collection)
       .where("name", "==", name)
       .get();
-  return formatObjects(snapshot);
+  return formatObjectList(snapshot);
+};
+
+exports.getUserById = async (id) => {
+  const snapshot = await db
+      .collection(collection)
+      .doc(id)
+      .get();
+  return formatObject(snapshot);
 };

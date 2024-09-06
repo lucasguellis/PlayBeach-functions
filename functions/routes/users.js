@@ -16,6 +16,12 @@ router.get("/", async (req, res) => {
   res.status(200).json({users: users});
 });
 
+router.get("/:userId", async (req, res) => {
+  const {userId} = req.params;
+  const user = await UserController.getUserById(userId);
+  res.status(200).json({user: user});
+});
+
 router.get("/getPlaces", async (req, res) => {
   const userId = req.query.userId;
   const users = await PlacesController.getPlacesByUserId(userId);
