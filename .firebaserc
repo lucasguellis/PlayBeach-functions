@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "playbeach-deda5"
-  }
+    "default": "playbeach-deda5",
+    "staging": "playbeach-deda5"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }
