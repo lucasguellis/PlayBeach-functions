@@ -68,10 +68,10 @@ Update the above table with actual endpoints and descriptions of what each does.
 Create a `.env` file in the functions directory with the following variables:
 
 ```env
-GOOGLE_APPLICATION_CREDENTIALS=firebase-app-credencials-json
+GOOGLE_APPLICATION_CREDENTIALS=./playbeach-credentials.json
 ```
 
-Replace the placeholder values with your actual Firebase project settings.
+Create the json file with your actual Firebase project settings.
 
 ## Deployment
 
