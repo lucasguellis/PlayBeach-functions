@@ -15,3 +15,11 @@ exports.getPlacesByName = async (name) => {
       .get();
   return formatObjects(snapshot);
 };
+
+exports.getPlacesByUserId = async (userId) => {
+  const snapshot = await db
+      .collection(collection)
+      .where("users", "array-contains" ,userId)
+      .get();
+  return formatObjects(snapshot);
+};

@@ -1,16 +1,24 @@
 const express = require("express");
 const UserController = require("../controllers/users");
+const PlacesController = require("../controllers/places")
 
 const router = express.Router(); // eslint-disable-line
 
 router.get("/", async (req, res) => {
-  const users = await UserController.getAllUsers();
+  const name = req.query.name;
+
+  let users;
+  if (name) {
+    users = await UserController.getUsersByName(name);
+  } else {
+    users = await UserController.getAllUsers();
+  }
   res.status(200).json({users: users});
 });
 
-router.get("/:name", async (req, res) => {
-  const {name} = req.params;
-  const users = await UserController.getUsersByName(name);
+router.get("/getPlaces", async (req, res) => {
+  const userId = req.query.userId;
+  const users = await PlacesController.getPlacesByUserId(userId);
   res.status(200).json({users: users});
 });
 
