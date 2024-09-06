@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:name", async (req, res) => {
   const {name} = req.params;
-  const users = await UserController.getUserByName(name);
+  const users = await UserController.getUsersByName(name);
   res.status(200).json({users: users});
 });
 

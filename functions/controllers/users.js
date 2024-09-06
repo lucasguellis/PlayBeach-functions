@@ -8,7 +8,7 @@ exports.getAllUsers = async () => {
   return formatObjects(snapshot);
 };
 
-exports.getUserByName = async (name) => {
+exports.getUsersByName = async (name) => {
   const snapshot = await db
       .collection(collection)
       .where("name", "==", name)
