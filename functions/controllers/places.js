@@ -1,5 +1,5 @@
 const db = require("../config/database");
-const {formatObjectList} = require("../utils/snapshotFormatter");
+const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
 
 const collection = "places";
 
@@ -14,6 +14,14 @@ exports.getPlacesByName = async (name) => {
       .where("name", "==", name)
       .get();
   return formatObjectList(snapshot);
+};
+
+exports.getPlacesById = async (id) => {
+  const snapshot = await db
+      .collection(collection)
+      .doc(id)
+      .get();
+  return formatObject(snapshot);
 };
 
 exports.getPlacesByUserId = async (userId) => {

@@ -14,4 +14,10 @@ router.get("/:name", async (req, res) => {
   res.status(200).json({places: places});
 });
 
+router.get("/:placeId", async (req, res) => {
+  const {placeId} = req.params;
+  const place = await UserController.getUserById(placeId);
+  res.status(200).json({place: place});
+});
+
 module.exports = router;
