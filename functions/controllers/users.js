@@ -23,3 +23,8 @@ exports.getUserById = async (id) => {
       .get();
   return formatObject(snapshot);
 };
+
+exports.createUser = async (user) => {
+  const snapshot = await db.collection(collection).add(user);
+  return snapshot
+}

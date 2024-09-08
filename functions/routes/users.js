@@ -1,6 +1,8 @@
 const express = require("express");
 const UserController = require("../controllers/users");
 const PlacesController = require("../controllers/places");
+const User = require("../models/user")
+const { logger } = require("firebase-functions");
 
 const router = express.Router(); // eslint-disable-line
 
@@ -26,6 +28,31 @@ router.get("/places/getPlaces", async (req, res) => {
   const userId = req.query.userId;
   const users = await PlacesController.getPlacesByUserId(userId);
   res.status(200).json({users: users});
+});
+
+router.post('/createUser', async (req, res) => {
+  try {
+    const userData = req.body;
+    
+    userData.createdAt = `${Date.now()}`
+    userData.updatedAt = 0
+    userData.lastLogin = 0
+
+    const validationErrors = User.validate(userData);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ errors: validationErrors });
+    }
+
+    const newUser = JSON.parse(JSON.stringify(new User(userData)));
+
+    const userRef = await UserController.createUser(newUser.id)
+    logger.info(`User added with ID: ${userRef.id}`);
+
+    res.status(201).json({ message: 'User added successfully', id: userRef.id });
+  } catch (error) {
+    logger.error('Error adding user:', error);
+    res.status(500).json({ error: 'Failed to add user' });
+  }
 });
 
 module.exports = router;
