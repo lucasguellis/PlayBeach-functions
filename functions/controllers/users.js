@@ -26,5 +26,5 @@ exports.getUserById = async (id) => {
 
 exports.createUser = async (user) => {
   const snapshot = await db.collection(collection).add(user);
-  return snapshot
-}
+  return snapshot;
+};
