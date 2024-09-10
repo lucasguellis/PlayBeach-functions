@@ -4,6 +4,7 @@ const userRoutes = require("./routes/users");
 const placesRoutes = require("./routes/places");
 
 const app = express();
+app.use(express.json());
 
 // Routes registry
 app.use("/users", userRoutes);

@@ -31,3 +31,8 @@ exports.getPlacesByUserId = async (userId) => {
       .get();
   return formatObjectList(snapshot);
 };
+
+exports.createPlace = async (place) => {
+  const snapshot = await db.collection(collection).add(place);
+  return snapshot;
+};
