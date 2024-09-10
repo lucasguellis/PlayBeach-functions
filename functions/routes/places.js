@@ -6,21 +6,31 @@ const {logger} = require("firebase-functions");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const name = req.query.name;
+  try {
+    const name = req.query.name;
 
-  let places;
-  if (name) {
-    places = await PlacesController.getPlacesByName(name);
-  } else {
-    places = await PlacesController.getAllPlaces();
+    let places;
+    if (name) {
+      places = await PlacesController.getPlacesByName(name);
+    } else {
+      places = await PlacesController.getAllPlaces();
+    }
+    res.status(200).json({places: places});
+  } catch (error) {
+    logger.error("Error getting all places:", error);
+    res.status(500).json({error: "Failed finding places"});
   }
-  res.status(200).json({places: places});
 });
 
 router.get("/:placeId", async (req, res) => {
-  const {placeId} = req.params;
-  const place = await PlacesController.getPlacesById(placeId);
-  res.status(200).json({place: place});
+  try {
+    const {placeId} = req.params;
+    const place = await PlacesController.getPlacesById(placeId);
+    res.status(200).json({place: place});
+  } catch (error) {
+    logger.error("Error finding place:", error);
+    res.status(500).json({error: "Failed finding place"});
+  }
 });
 
 router.post("/createPlace", async (req, res) => {

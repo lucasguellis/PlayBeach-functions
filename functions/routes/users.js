@@ -7,27 +7,42 @@ const {logger} = require("firebase-functions");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const name = req.query.name;
+  try {
+    const name = req.query.name;
 
-  let users;
-  if (name) {
-    users = await UserController.getUsersByName(name);
-  } else {
-    users = await UserController.getAllUsers();
+    let users;
+    if (name) {
+      users = await UserController.getUsersByName(name);
+    } else {
+      users = await UserController.getAllUsers();
+    }
+    res.status(200).json({users: users});
+  } catch (error) {
+    logger.error("Error finding users:", error);
+    res.status(500).json({error: "Failed finding users"});
   }
-  res.status(200).json({users: users});
 });
 
 router.get("/:userId", async (req, res) => {
-  const {userId} = req.params;
-  const user = await UserController.getUserById(userId);
-  res.status(200).json({user: user});
+  try {
+    const {userId} = req.params;
+    const user = await UserController.getUserById(userId);
+    res.status(200).json({user: user});
+  } catch (error) {
+    logger.error("Error finding user:", error);
+    res.status(500).json({error: "Failed finding user"});
+  }
 });
 
 router.get("/places/getPlaces", async (req, res) => {
-  const userId = req.query.userId;
-  const users = await PlacesController.getPlacesByUserId(userId);
-  res.status(200).json({users: users});
+  try {
+    const userId = req.query.userId;
+    const users = await PlacesController.getPlacesByUserId(userId);
+    res.status(200).json({users: users});
+  } catch (error) {
+    logger.error("Error getting user places:", error);
+    res.status(500).json({error: "Failed getting user places"});
+  }
 });
 
 router.post("/createUser", async (req, res) => {
