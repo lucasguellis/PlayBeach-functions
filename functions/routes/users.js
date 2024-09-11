@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:userId", async (req, res) => {
+router.get("/profile/:userId", async (req, res) => {
   try {
     const {userId} = req.params;
     const user = await UserController.getUserById(userId);
