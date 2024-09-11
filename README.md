@@ -56,12 +56,7 @@ This will start the functions emulator, and you can access the API at `http://lo
 
 ## Available Endpoints
 
-| Method | Endpoint            | Description               |
-|--------|---------------------|---------------------------|
-| GET    | /users              | Retrieve all users        |
-| GET    | /users/<name>       | Search for users by name  |
-
-Update the above table with actual endpoints and descriptions of what each does.
+See [here](available_endpoints.md) the available endpoints of this API.
 
 ## Environment Variables
 
