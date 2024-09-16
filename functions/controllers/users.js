@@ -28,3 +28,15 @@ exports.createUser = async (user) => {
   const snapshot = await db.collection(collection).add(user);
   return snapshot;
 };
+
+exports.updateUser = async (userId, userData) => {
+  const userRef = db.collection(collection).doc(userId);
+  const snapshot = await userRef.update(userData);
+  return snapshot;
+};
+
+exports.deleteUser = async (userId) => {
+  const userRef = db.collection(collection).doc(userId);
+  const snapshot = await userRef.delete();
+  return snapshot;
+};
