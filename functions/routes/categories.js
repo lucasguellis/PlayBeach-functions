@@ -1,11 +1,12 @@
 const express = require("express");
 const CategoriesController = require("../controllers/categories");
 const Category = require("../models/category");
-const {logger} = require("firebase-functions");
+const { logger } = require("firebase-functions");
+const { AppError } = require('../middlewares/errorHandler');
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const name = req.query.name;
 
@@ -15,25 +16,33 @@ router.get("/", async (req, res) => {
     } else {
       categories = await CategoriesController.getAllCategories();
     }
+
+    if (!categories) {
+      return next(new AppError(404, 'No categories found'));
+    }
+
     res.status(200).json({categories: categories});
   } catch (error) {
-    logger.error("Error finding categories:", error);
-    res.status(500).json({error: "Failed finding categories"});
+    next(new AppError(500, 'Failed finding categories'));
   }
 });
 
-router.get("/:categoryId", async (req, res) => {
+router.get("/:categoryId", async (req, res, next) => {
   try {
     const {categoryId} = req.params;
     const category = await CategoriesController.getCategoryById(categoryId);
+
+    if (!category) {
+      return next(new AppError(404, 'Category not found'));
+    }
+
     res.status(200).json({category: category});
   } catch (error) {
-    logger.error("Error finding category:", error);
-    res.status(500).json({error: "Failed finding category"});
+    next(new AppError(500, 'Failed finding category'));
   }
 });
 
-router.post("/createCategory", async (req, res) => {
+router.post("/createCategory", async (req, res, next) => {
   try {
     const categoryData = req.body;
 
@@ -42,7 +51,7 @@ router.post("/createCategory", async (req, res) => {
 
     const validationErrors = Category.validate(categoryData);
     if (validationErrors.length > 0) {
-      return res.status(400).json({errors: validationErrors});
+      return next(new AppError(400, validationErrors.join(', ')));
     }
 
     const newCategory = JSON.parse(JSON.stringify(new Category(categoryData)));
@@ -52,33 +61,40 @@ router.post("/createCategory", async (req, res) => {
 
     res.status(201).json({message: "Category added successfully", id: categoryRef.id});
   } catch (error) {
-    logger.error("Error adding category:", error);
-    res.status(500).json({error: "Failed to add category"});
+    next(new AppError(500, 'Failed to add category'));
   }
 });
 
-router.put("/:categoryId", async (req, res) => {
+router.put("/:categoryId", async (req, res, next) => {
   try {
     const {categoryId} = req.params;
     const updatedData = req.body;
     updatedData.updatedAt = Date.now();
 
-    await CategoriesController.updateCategory(categoryId, updatedData);
+    const updatedCategory = await CategoriesController.updateCategory(categoryId, updatedData);
+
+    if (!updatedCategory) {
+      return next(new AppError(404, 'Category not found'));
+    }
+
     res.status(200).json({message: "Category updated successfully"});
   } catch (error) {
-    logger.error("Error updating category:", error);
-    res.status(500).json({error: "Failed to update category"});
+    next(new AppError(500, 'Failed to update category'));
   }
 });
 
-router.delete("/:categoryId", async (req, res) => {
+router.delete("/:categoryId", async (req, res, next) => {
   try {
     const {categoryId} = req.params;
-    await CategoriesController.deleteCategory(categoryId);
+    const deletedCategory = await CategoriesController.deleteCategory(categoryId);
+
+    if (!deletedCategory) {
+      return next(new AppError(404, 'Category not found'));
+    }
+
     res.status(200).json({message: "Category deleted successfully"});
   } catch (error) {
-    logger.error("Error deleting category:", error);
-    res.status(500).json({error: "Failed to delete category"});
+    next(new AppError(500, 'Failed to delete category'));
   }
 });
 

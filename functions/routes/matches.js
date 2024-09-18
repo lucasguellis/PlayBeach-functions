@@ -1,43 +1,50 @@
 const express = require("express");
 const MatchesController = require("../controllers/matches");
 const Match = require("../models/match");
-const {logger} = require("firebase-functions");
+const { logger } = require("firebase-functions");
+const { AppError } = require('../middlewares/errorHandler');
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const matches = await MatchesController.getAllMatches();
+    if (!matches) {
+      return next(new AppError(404, 'No matches found'));
+    }
     res.status(200).json({matches: matches});
   } catch (error) {
-    logger.error("Error finding matches:", error);
-    res.status(500).json({error: "Failed finding matches"});
+    next(new AppError(500, 'Failed finding matches'));
   }
 });
 
-router.get("/:matchId", async (req, res) => {
+router.get("/:matchId", async (req, res, next) => {
   try {
     const {matchId} = req.params;
     const match = await MatchesController.getMatchById(matchId);
+    if (!match) {
+      return next(new AppError(404, 'Match not found'));
+    }
     res.status(200).json({match: match});
   } catch (error) {
-    logger.error("Error finding match:", error);
-    res.status(500).json({error: "Failed finding match"});
+    next(new AppError(500, 'Failed finding match'));
   }
 });
 
-router.get("/tournament/:tournamentId", async (req, res) => {
+router.get("/tournament/:tournamentId", async (req, res, next) => {
   try {
     const {tournamentId} = req.params;
     const matches = await MatchesController.getMatchesByTournamentId(tournamentId);
+    if (!matches) {
+      return next(new AppError(404, 'No matches found for this tournament'));
+    }
     res.status(200).json({matches: matches});
   } catch (error) {
-    logger.error("Error finding matches for tournament:", error);
-    res.status(500).json({error: "Failed finding matches for tournament"});
+    next(new AppError(500, 'Failed finding matches for tournament'));
   }
 });
 
-router.post("/createMatch", async (req, res) => {
+router.post("/createMatch", async (req, res, next) => {
   try {
     const matchData = req.body;
 
@@ -46,7 +53,7 @@ router.post("/createMatch", async (req, res) => {
 
     const validationErrors = Match.validate(matchData);
     if (validationErrors.length > 0) {
-      return res.status(400).json({errors: validationErrors});
+      return next(new AppError(400, validationErrors.join(', ')));
     }
 
     const newMatch = JSON.parse(JSON.stringify(new Match(matchData)));
@@ -56,33 +63,36 @@ router.post("/createMatch", async (req, res) => {
 
     res.status(201).json({message: "Match added successfully", id: matchRef.id});
   } catch (error) {
-    logger.error("Error adding match:", error);
-    res.status(500).json({error: "Failed to add match"});
+    next(new AppError(500, 'Failed to add match'));
   }
 });
 
-router.put("/:matchId", async (req, res) => {
+router.put("/:matchId", async (req, res, next) => {
   try {
     const {matchId} = req.params;
     const updatedData = req.body;
     updatedData.updatedAt = Date.now();
 
-    await MatchesController.updateMatch(matchId, updatedData);
+    const updatedMatch = await MatchesController.updateMatch(matchId, updatedData);
+    if (!updatedMatch) {
+      return next(new AppError(404, 'Match not found'));
+    }
     res.status(200).json({message: "Match updated successfully"});
   } catch (error) {
-    logger.error("Error updating match:", error);
-    res.status(500).json({error: "Failed to update match"});
+    next(new AppError(500, 'Failed to update match'));
   }
 });
 
-router.delete("/:matchId", async (req, res) => {
+router.delete("/:matchId", async (req, res, next) => {
   try {
     const {matchId} = req.params;
-    await MatchesController.deleteMatch(matchId);
+    const deletedMatch = await MatchesController.deleteMatch(matchId);
+    if (!deletedMatch) {
+      return next(new AppError(404, 'Match not found'));
+    }
     res.status(200).json({message: "Match deleted successfully"});
   } catch (error) {
-    logger.error("Error deleting match:", error);
-    res.status(500).json({error: "Failed to delete match"});
+    next(new AppError(500, 'Failed to delete match'));
   }
 });
 

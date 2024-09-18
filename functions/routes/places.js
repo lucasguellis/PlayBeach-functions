@@ -1,11 +1,12 @@
 const express = require("express");
 const PlacesController = require("../controllers/places");
 const Place = require("../models/place");
-const {logger} = require("firebase-functions");
+const { logger } = require("firebase-functions");
+const { AppError } = require('../middlewares/errorHandler');
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const name = req.query.name;
 
@@ -15,25 +16,33 @@ router.get("/", async (req, res) => {
     } else {
       places = await PlacesController.getAllPlaces();
     }
+
+    if (!places) {
+      return next(new AppError(404, 'No places found'));
+    }
+
     res.status(200).json({places: places});
   } catch (error) {
-    logger.error("Error getting all places:", error);
-    res.status(500).json({error: "Failed finding places"});
+    next(new AppError(500, 'Failed finding places'));
   }
 });
 
-router.get("/:placeId", async (req, res) => {
+router.get("/:placeId", async (req, res, next) => {
   try {
     const {placeId} = req.params;
     const place = await PlacesController.getPlacesById(placeId);
+
+    if (!place) {
+      return next(new AppError(404, 'Place not found'));
+    }
+
     res.status(200).json({place: place});
   } catch (error) {
-    logger.error("Error finding place:", error);
-    res.status(500).json({error: "Failed finding place"});
+    next(new AppError(500, 'Failed finding place'));
   }
 });
 
-router.post("/createPlace", async (req, res) => {
+router.post("/createPlace", async (req, res, next) => {
   try {
     const placeData = req.body;
 
@@ -42,7 +51,7 @@ router.post("/createPlace", async (req, res) => {
 
     const validationErrors = Place.validate(placeData);
     if (validationErrors.length > 0) {
-      return res.status(400).json({errors: validationErrors});
+      return next(new AppError(400, validationErrors.join(', ')));
     }
 
     const newPlace = JSON.parse(JSON.stringify(new Place(placeData)));
@@ -52,8 +61,40 @@ router.post("/createPlace", async (req, res) => {
 
     res.status(201).json({message: "Place added successfully", id: placeRef.id});
   } catch (error) {
-    logger.error("Error adding place:", error);
-    res.status(500).json({error: "Failed to add place"});
+    next(new AppError(500, 'Failed to add place'));
+  }
+});
+
+router.put("/:placeId", async (req, res, next) => {
+  try {
+    const {placeId} = req.params;
+    const updatedData = req.body;
+    updatedData.updatedAt = Date.now();
+
+    const updatedPlace = await PlacesController.updatePlace(placeId, updatedData);
+
+    if (!updatedPlace) {
+      return next(new AppError(404, 'Place not found'));
+    }
+
+    res.status(200).json({message: "Place updated successfully"});
+  } catch (error) {
+    next(new AppError(500, 'Failed to update place'));
+  }
+});
+
+router.delete("/:placeId", async (req, res, next) => {
+  try {
+    const {placeId} = req.params;
+    const deletedPlace = await PlacesController.deletePlace(placeId);
+
+    if (!deletedPlace) {
+      return next(new AppError(404, 'Place not found'));
+    }
+
+    res.status(200).json({message: "Place deleted successfully"});
+  } catch (error) {
+    next(new AppError(500, 'Failed to delete place'));
   }
 });
 

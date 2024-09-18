@@ -1,11 +1,12 @@
 const express = require("express");
 const TournamentController = require("../controllers/tournaments");
 const Tournament = require("../models/tournament");
-const {logger} = require("firebase-functions");
+const { logger } = require("firebase-functions");
+const { AppError } = require('../middlewares/errorHandler');
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const name = req.query.name;
 
@@ -15,25 +16,33 @@ router.get("/", async (req, res) => {
     } else {
       tournaments = await TournamentController.getAllTournaments();
     }
+
+    if (!tournaments) {
+      return next(new AppError(404, 'No tournaments found'));
+    }
+
     res.status(200).json({tournaments: tournaments});
   } catch (error) {
-    logger.error("Error finding tournaments:", error);
-    res.status(500).json({error: "Failed finding tournaments"});
+    next(new AppError(500, 'Failed finding tournaments'));
   }
 });
 
-router.get("/:tournamentId", async (req, res) => {
+router.get("/:tournamentId", async (req, res, next) => {
   try {
     const {tournamentId} = req.params;
     const tournament = await TournamentController.getTournamentById(tournamentId);
+
+    if (!tournament) {
+      return next(new AppError(404, 'Tournament not found'));
+    }
+
     res.status(200).json({tournament: tournament});
   } catch (error) {
-    logger.error("Error finding tournament:", error);
-    res.status(500).json({error: "Failed finding tournament"});
+    next(new AppError(500, 'Failed finding tournament'));
   }
 });
 
-router.post("/createTournament", async (req, res) => {
+router.post("/createTournament", async (req, res, next) => {
   try {
     const tournamentData = req.body;
 
@@ -42,7 +51,7 @@ router.post("/createTournament", async (req, res) => {
 
     const validationErrors = Tournament.validate(tournamentData);
     if (validationErrors.length > 0) {
-      return res.status(400).json({errors: validationErrors});
+      return next(new AppError(400, validationErrors.join(', ')));
     }
 
     const newTournament = JSON.parse(JSON.stringify(new Tournament(tournamentData)));
@@ -52,33 +61,40 @@ router.post("/createTournament", async (req, res) => {
 
     res.status(201).json({message: "Tournament added successfully", id: tournamentRef.id});
   } catch (error) {
-    logger.error("Error adding tournament:", error);
-    res.status(500).json({error: "Failed to add tournament"});
+    next(new AppError(500, 'Failed to add tournament'));
   }
 });
 
-router.put("/:tournamentId", async (req, res) => {
+router.put("/:tournamentId", async (req, res, next) => {
   try {
     const {tournamentId} = req.params;
     const updatedData = req.body;
     updatedData.updatedAt = Date.now();
 
-    await TournamentController.updateTournament(tournamentId, updatedData);
+    const updatedTournament = await TournamentController.updateTournament(tournamentId, updatedData);
+
+    if (!updatedTournament) {
+      return next(new AppError(404, 'Tournament not found'));
+    }
+
     res.status(200).json({message: "Tournament updated successfully"});
   } catch (error) {
-    logger.error("Error updating tournament:", error);
-    res.status(500).json({error: "Failed to update tournament"});
+    next(new AppError(500, 'Failed to update tournament'));
   }
 });
 
-router.delete("/:tournamentId", async (req, res) => {
+router.delete("/:tournamentId", async (req, res, next) => {
   try {
     const {tournamentId} = req.params;
-    await TournamentController.deleteTournament(tournamentId);
+    const deletedTournament = await TournamentController.deleteTournament(tournamentId);
+
+    if (!deletedTournament) {
+      return next(new AppError(404, 'Tournament not found'));
+    }
+
     res.status(200).json({message: "Tournament deleted successfully"});
   } catch (error) {
-    logger.error("Error deleting tournament:", error);
-    res.status(500).json({error: "Failed to delete tournament"});
+    next(new AppError(500, 'Failed to delete tournament'));
   }
 });
 
