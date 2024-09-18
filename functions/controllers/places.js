@@ -36,3 +36,28 @@ exports.createPlace = async (place) => {
   const snapshot = await db.collection(collection).add(place);
   return snapshot;
 };
+
+exports.updatePlace = async (id, updatedData) => {
+  const placeRef = db.collection(collection).doc(id);
+  const place = await placeRef.get();
+
+  if (!place.exists) {
+    return null;
+  }
+
+  await placeRef.update(updatedData);
+  const updatedPlace = await placeRef.get();
+  return formatObject(updatedPlace);
+};
+
+exports.deletePlace = async (id) => {
+  const placeRef = db.collection(collection).doc(id);
+  const place = await placeRef.get();
+
+  if (!place.exists) {
+    return null;
+  }
+
+  await placeRef.delete();
+  return { id };
+};

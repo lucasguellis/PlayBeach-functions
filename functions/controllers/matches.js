@@ -30,17 +30,26 @@ exports.createMatch = async (match) => {
 };
 
 exports.updateMatch = async (id, updatedData) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .update(updatedData);
-  return snapshot;
+  const matchRef = db.collection(collection).doc(id);
+  const match = await matchRef.get();
+
+  if (!match.exists) {
+    return null;
+  }
+
+  await matchRef.update(updatedData);
+  const updatedMatch = await matchRef.get();
+  return formatObject(updatedMatch);
 };
 
 exports.deleteMatch = async (id) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .delete();
-  return snapshot;
+  const matchRef = db.collection(collection).doc(id);
+  const match = await matchRef.get();
+
+  if (!match.exists) {
+    return null;
+  }
+
+  await matchRef.delete();
+  return { id };
 };

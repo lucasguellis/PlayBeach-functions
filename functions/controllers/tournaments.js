@@ -29,17 +29,26 @@ exports.createTournament = async (tournament) => {
 };
 
 exports.updateTournament = async (id, updatedData) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .update(updatedData);
-  return snapshot;
+  const tournamentRef = db.collection(collection).doc(id);
+  const tournament = await tournamentRef.get();
+
+  if (!tournament.exists) {
+    return null;
+  }
+
+  await tournamentRef.update(updatedData);
+  const updatedTournament = await tournamentRef.get();
+  return formatObject(updatedTournament);
 };
 
 exports.deleteTournament = async (id) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .delete();
-  return snapshot;
+  const tournamentRef = db.collection(collection).doc(id);
+  const tournament = await tournamentRef.get();
+
+  if (!tournament.exists) {
+    return null;
+  }
+
+  await tournamentRef.delete();
+  return { id };
 };

@@ -29,14 +29,27 @@ exports.createUser = async (user) => {
   return snapshot;
 };
 
-exports.updateUser = async (userId, userData) => {
-  const userRef = db.collection(collection).doc(userId);
-  const snapshot = await userRef.update(userData);
-  return snapshot;
+exports.updateUser = async (id, updatedData) => {
+  const userRef = db.collection(collection).doc(id);
+  const user = await userRef.get();
+
+  if (!user.exists) {
+    return null;
+  }
+
+  await userRef.update(updatedData);
+  const updatedUser = await userRef.get();
+  return formatObject(updatedUser);
 };
 
-exports.deleteUser = async (userId) => {
-  const userRef = db.collection(collection).doc(userId);
-  const snapshot = await userRef.delete();
-  return snapshot;
+exports.deleteUser = async (id) => {
+  const userRef = db.collection(collection).doc(id);
+  const user = await userRef.get();
+
+  if (!user.exists) {
+    return null;
+  }
+
+  await userRef.delete();
+  return { id };
 };

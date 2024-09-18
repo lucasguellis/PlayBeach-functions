@@ -30,17 +30,26 @@ exports.createCategory = async (category) => {
 };
 
 exports.updateCategory = async (id, updatedData) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .update(updatedData);
-  return snapshot;
+  const categoryRef = db.collection(collection).doc(id);
+  const category = await categoryRef.get();
+
+  if (!category.exists) {
+    return null;
+  }
+
+  await categoryRef.update(updatedData);
+  const updatedCategory = await categoryRef.get();
+  return formatObject(updatedCategory);
 };
 
 exports.deleteCategory = async (id) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .delete();
-  return snapshot;
+  const categoryRef = db.collection(collection).doc(id);
+  const category = await categoryRef.get();
+
+  if (!category.exists) {
+    return null;
+  }
+
+  await categoryRef.delete();
+  return { id };
 };
