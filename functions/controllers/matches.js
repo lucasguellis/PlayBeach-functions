@@ -13,6 +13,11 @@ exports.getMatchById = async (id) => {
       .collection(collection)
       .doc(id)
       .get();
+
+  if (!snapshot.exists) {
+    return null;
+  }
+
   return formatObject(snapshot);
 };
 
