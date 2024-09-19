@@ -9,10 +9,15 @@ exports.getAllPlaces = async () => {
 };
 
 exports.getPlacesByName = async (name) => {
+  const nameLower = name.toLowerCase();
+  const nameUpper = nameLower + '\uf8ff';
+  
   const snapshot = await db
       .collection(collection)
-      .where("name", "==", name)
+      .where("nameLower", ">=", nameLower)
+      .where("nameLower", "<=", nameUpper)
       .get();
+  
   return formatObjectList(snapshot);
 };
 
@@ -33,6 +38,7 @@ exports.getPlacesByUserId = async (userId) => {
 };
 
 exports.createPlace = async (place) => {
+  place.nameLower = place.name.toLowerCase();
   const snapshot = await db.collection(collection).add(place);
   return snapshot;
 };

@@ -9,10 +9,15 @@ exports.getAllUsers = async () => {
 };
 
 exports.getUsersByName = async (name) => {
+  const nameLower = name.toLowerCase();
+  const nameUpper = nameLower + '\uf8ff';
+  
   const snapshot = await db
       .collection(collection)
-      .where("name", "==", name)
+      .where("nameLower", ">=", nameLower)
+      .where("nameLower", "<=", nameUpper)
       .get();
+  
   return formatObjectList(snapshot);
 };
 
@@ -25,6 +30,7 @@ exports.getUserById = async (id) => {
 };
 
 exports.createUser = async (user) => {
+  user.nameLower = user.name.toLowerCase();
   const snapshot = await db.collection(collection).add(user);
   return snapshot;
 };

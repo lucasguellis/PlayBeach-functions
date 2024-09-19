@@ -9,12 +9,18 @@ exports.getAllTournaments = async () => {
 };
 
 exports.getTournamentsByName = async (name) => {
+  const nameLower = name.toLowerCase();
+  const nameUpper = nameLower + '\uf8ff';
+  
   const snapshot = await db
       .collection(collection)
-      .where("name", "==", name)
+      .where("nameLower", ">=", nameLower)
+      .where("nameLower", "<=", nameUpper)
       .get();
+  
   return formatObjectList(snapshot);
 };
+
 exports.getTournamentById = async (id) => {
   const snapshot = await db
       .collection(collection)
@@ -24,6 +30,7 @@ exports.getTournamentById = async (id) => {
 };
 
 exports.createTournament = async (tournament) => {
+  tournament.nameLower = tournament.name.toLowerCase();
   const snapshot = await db.collection(collection).add(tournament);
   return snapshot;
 };

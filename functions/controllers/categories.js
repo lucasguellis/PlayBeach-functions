@@ -9,10 +9,15 @@ exports.getAllCategories = async () => {
 };
 
 exports.getCategoryByName = async (name) => {
+  const nameLower = name.toLowerCase();
+  const nameUpper = nameLower + '\uf8ff';
+  
   const snapshot = await db
       .collection(collection)
-      .where("name", "==", name)
+      .where("nameLower", ">=", nameLower)
+      .where("nameLower", "<=", nameUpper)
       .get();
+
   return formatObjectList(snapshot);
 };
 
@@ -25,6 +30,7 @@ exports.getCategoryById = async (id) => {
 };
 
 exports.createCategory = async (category) => {
+  category.nameLower = category.name.toLowerCase();
   const snapshot = await db.collection(collection).add(category);
   return snapshot;
 };
