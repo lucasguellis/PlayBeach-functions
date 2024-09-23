@@ -1,6 +1,5 @@
 const db = require("../config/database");
 const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
-const PlacesController = require("./places");
 
 const collection = "users";
 

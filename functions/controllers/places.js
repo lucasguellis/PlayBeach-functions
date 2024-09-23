@@ -1,6 +1,5 @@
 const db = require("../config/database");
 const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
-const { logger } = require("firebase-functions");
 
 const collection = "places";
 

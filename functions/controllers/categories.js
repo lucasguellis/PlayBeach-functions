@@ -1,6 +1,6 @@
 const db = require("../config/database");
-const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
-const {logger} = require("firebase-functions");
+const {formatObject} = require("../utils/snapshotFormatter");
+
 const collection = "categories";
 
 exports.getCategoryByName = async (name) => {

@@ -1,6 +1,5 @@
 const express = require("express");
 const UserController = require("../controllers/users");
-const PlacesController = require("../controllers/places");
 const User = require("../models/user");
 const { AppError } = require('../middlewares/errorHandler');
 
