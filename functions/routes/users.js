@@ -79,7 +79,7 @@ router.post("/createUser", async (req, res, next) => {
   }
 });
 
-router.put("/updateUser/:userId", async (req, res, next) => {
+router.put("/:userId", async (req, res, next) => {
   try {
     const {userId} = req.params;
     const userData = req.body;
@@ -96,7 +96,7 @@ router.put("/updateUser/:userId", async (req, res, next) => {
   }
 });
 
-router.delete("/deleteUser/:userId", async (req, res, next) => {
+router.delete("/:userId", async (req, res, next) => {
   try {
     const {userId} = req.params;
 

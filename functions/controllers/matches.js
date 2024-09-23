@@ -21,7 +21,7 @@ exports.getMatchById = async (id) => {
   return formatObject(snapshot);
 };
 
-exports.getMatchesByTournamentId = async (tournamentId) => {
+exports.getByTournamentId = async (tournamentId) => {
   const snapshot = await db
       .collection(collection)
       .where("tournamentId", "==", tournamentId)

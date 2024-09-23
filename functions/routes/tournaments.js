@@ -1,5 +1,6 @@
 const express = require("express");
 const TournamentController = require("../controllers/tournaments");
+const MatchesController = require("../controllers/matches");
 const Tournament = require("../models/tournament");
 const { logger } = require("firebase-functions");
 const { AppError } = require('../middlewares/errorHandler');
@@ -183,6 +184,19 @@ router.put("/:tournamentId/categories/:categoryId", async (req, res, next) => {
     res.status(200).json({message: "Category updated successfully"});
   } catch (error) {
     next(new AppError(500, 'Failed to update category', error));
+  }
+});
+
+router.get("/:tournamentId/matches", async (req, res, next) => {
+  try {
+    const {tournamentId} = req.params;
+    const matches = await MatchesController.getByTournamentId(tournamentId);
+    if (!matches) {
+      return next(new AppError(404, 'No matches found for this tournament'));
+    }
+    res.status(200).json({matches: matches});
+  } catch (error) {
+    next(new AppError(500, 'Failed finding matches for tournament', error));
   }
 });
 

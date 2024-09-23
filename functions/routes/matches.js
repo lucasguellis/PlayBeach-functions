@@ -31,19 +31,6 @@ router.get("/:matchId", async (req, res, next) => {
   }
 });
 
-router.get("/tournament/:tournamentId", async (req, res, next) => {
-  try {
-    const {tournamentId} = req.params;
-    const matches = await MatchesController.getMatchesByTournamentId(tournamentId);
-    if (!matches) {
-      return next(new AppError(404, 'No matches found for this tournament'));
-    }
-    res.status(200).json({matches: matches});
-  } catch (error) {
-    next(new AppError(500, 'Failed finding matches for tournament', error));
-  }
-});
-
 router.post("/createMatch", async (req, res, next) => {
   try {
     const matchData = req.body;
