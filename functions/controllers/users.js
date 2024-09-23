@@ -1,5 +1,6 @@
 const db = require("../config/database");
 const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
+const PlacesController = require("./places");
 
 const collection = "users";
 
@@ -63,4 +64,10 @@ exports.deleteUser = async (id) => {
 
   await userRef.delete();
   return { id };
+};
+
+exports.getPlacesByUserId = async (userId) => {
+  const user = await this.getUserById(userId)
+  const placesIds = Object.keys(user.places);
+  return {placesIds: placesIds};
 };

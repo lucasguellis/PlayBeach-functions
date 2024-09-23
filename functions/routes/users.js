@@ -42,10 +42,10 @@ router.get("/profile/:userId", async (req, res, next) => {
   }
 });
 
-router.get("/places/getPlaces", async (req, res, next) => {
+router.get("/:userId/getPlaces", async (req, res, next) => {
   try {
-    const userId = req.query.userId;
-    const places = await PlacesController.getPlacesByUserId(userId);
+    const {userId} = req.params;
+    const places = await UserController.getPlacesByUserId(userId);
 
     if (!places) {
       return next(new AppError(404, 'No places found for this user'));

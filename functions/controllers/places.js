@@ -1,5 +1,6 @@
 const db = require("../config/database");
 const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
+const { logger } = require("firebase-functions");
 
 const collection = "places";
 
@@ -22,10 +23,7 @@ exports.getPlacesByName = async (name) => {
 };
 
 exports.getPlacesById = async (id) => {
-  const snapshot = await db
-      .collection(collection)
-      .doc(id)
-      .get();
+  const snapshot = await this.getPlaceEntityById(id);
 
   if (!snapshot.exists) {
     return null;
@@ -34,12 +32,13 @@ exports.getPlacesById = async (id) => {
   return formatObject(snapshot);
 };
 
-exports.getPlacesByUserId = async (userId) => {
+exports.getPlaceEntityById = async (id) => {
   const snapshot = await db
       .collection(collection)
-      .where("users", "array-contains", userId)
+      .doc(id)
       .get();
-  return formatObjectList(snapshot);
+
+  return snapshot;
 };
 
 exports.createPlace = async (place) => {
@@ -71,4 +70,15 @@ exports.deletePlace = async (id) => {
 
   await placeRef.delete();
   return { id };
+};
+
+exports.getUsersByPlaceId = async (placeId) => {
+  const placeRef = await this.getPlaceEntityById(placeId);
+  const place = await formatObject(placeRef);
+  
+  // Convert the users object to an array of user IDs
+  const userIds = Object.keys(place.users);
+
+  
+  return {userIds: userIds};
 };

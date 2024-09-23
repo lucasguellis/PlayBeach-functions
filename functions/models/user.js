@@ -86,7 +86,7 @@ class User {
     }
 
     // Should be an array
-    if (Array.isArray(user.places) && user.places.some((place) => typeof place !== "string")) {
+    if (typeof user.places !== "object" || Object.entries(user.places).some(([key, value]) => typeof key !== "string" || value !== true)) {
       errors.push("Invalid or missing places");
     }
 

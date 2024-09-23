@@ -94,7 +94,22 @@ router.delete("/:placeId", async (req, res, next) => {
 
     res.status(200).json({message: "Place deleted successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to delete place'));
+    next(new AppError(500, 'Failed to delete place', error));
+  }
+});
+
+router.get("/:placeId/getUsers", async (req, res, next) => {
+  try {
+    const { placeId } = req.params;
+    const users = await PlacesController.getUsersByPlaceId(placeId);
+
+    if (!users) {
+      return next(new AppError(404, 'No users found for this place'));
+    }
+
+    res.status(200).json({users: users});
+  } catch (error) {
+    next(new AppError(500, 'Failed to get users for place', error));
   }
 });
 
