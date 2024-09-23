@@ -1,11 +1,13 @@
 const { logger } = require("firebase-functions");
 
 class AppError extends Error {
-  constructor(statusCode, message) {
+  constructor(statusCode, message, error = null) {
     super(message);
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.isOperational = true;
+
+    logger.error(error);
 
     Error.captureStackTrace(this, this.constructor);
   }

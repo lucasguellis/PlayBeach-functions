@@ -23,7 +23,7 @@ router.get("/", async (req, res, next) => {
 
     res.status(200).json({places: places});
   } catch (error) {
-    next(new AppError(500, 'Failed finding places'));
+    next(new AppError(500, 'Failed finding places', error));
   }
 });
 
@@ -38,7 +38,7 @@ router.get("/:placeId", async (req, res, next) => {
 
     res.status(200).json({place: place});
   } catch (error) {
-    next(new AppError(500, 'Failed finding place'));
+    next(new AppError(500, 'Failed finding place', error));
   }
 });
 
@@ -61,7 +61,7 @@ router.post("/createPlace", async (req, res, next) => {
 
     res.status(201).json({message: "Place added successfully", id: placeRef.id});
   } catch (error) {
-    next(new AppError(500, 'Failed to add place'));
+    next(new AppError(500, 'Failed to add place', error));
   }
 });
 
@@ -79,7 +79,7 @@ router.put("/:placeId", async (req, res, next) => {
 
     res.status(200).json({message: "Place updated successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to update place'));
+    next(new AppError(500, 'Failed to update place', error));
   }
 });
 

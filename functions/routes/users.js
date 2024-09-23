@@ -23,7 +23,7 @@ router.get("/", async (req, res, next) => {
 
     res.status(200).json({users: users});
   } catch (error) {
-    next(new AppError(500, 'Failed finding users'));
+    next(new AppError(500, 'Failed finding users', error));
   }
 });
 
@@ -38,7 +38,7 @@ router.get("/profile/:userId", async (req, res, next) => {
 
     res.status(200).json({user: user});
   } catch (error) {
-    next(new AppError(500, 'Failed finding user'));
+    next(new AppError(500, 'Failed finding user', error));
   }
 });
 
@@ -53,7 +53,7 @@ router.get("/places/getPlaces", async (req, res, next) => {
 
     res.status(200).json({places: places});
   } catch (error) {
-    next(new AppError(500, 'Failed finding places for user'));
+    next(new AppError(500, 'Failed finding places for user', error));
   }
 });
 
@@ -76,7 +76,7 @@ router.post("/createUser", async (req, res, next) => {
     
     res.status(201).json({message: "User added successfully", id: userRef.id});
   } catch (error) {
-    next(new AppError(500, 'Failed to add user'));
+    next(new AppError(500, 'Failed to add user', error));
   }
 });
 
@@ -93,7 +93,7 @@ router.put("/updateUser/:userId", async (req, res, next) => {
 
     res.status(200).json({message: "User updated successfully", user: updatedUser});
   } catch (error) {
-    next(new AppError(500, 'Failed to update user'));
+    next(new AppError(500, 'Failed to update user', error));
   }
 });
 
@@ -109,7 +109,7 @@ router.delete("/deleteUser/:userId", async (req, res, next) => {
 
     res.status(200).json({message: "User deleted successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to delete user'));
+    next(new AppError(500, 'Failed to delete user', error));
   }
 });
 

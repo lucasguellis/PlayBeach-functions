@@ -14,7 +14,7 @@ router.get("/", async (req, res, next) => {
     }
     res.status(200).json({matches: matches});
   } catch (error) {
-    next(new AppError(500, 'Failed finding matches'));
+    next(new AppError(500, 'Failed finding matches', error));
   }
 });
 
@@ -27,7 +27,7 @@ router.get("/:matchId", async (req, res, next) => {
     }
     res.status(200).json({match: match});
   } catch (error) {
-    next(new AppError(500, 'Failed finding match'));
+    next(new AppError(500, 'Failed finding match', error));
   }
 });
 
@@ -40,7 +40,7 @@ router.get("/tournament/:tournamentId", async (req, res, next) => {
     }
     res.status(200).json({matches: matches});
   } catch (error) {
-    next(new AppError(500, 'Failed finding matches for tournament'));
+    next(new AppError(500, 'Failed finding matches for tournament', error));
   }
 });
 
@@ -63,7 +63,7 @@ router.post("/createMatch", async (req, res, next) => {
 
     res.status(201).json({message: "Match added successfully", id: matchRef.id});
   } catch (error) {
-    next(new AppError(500, 'Failed to add match'));
+    next(new AppError(500, 'Failed to add match', error));
   }
 });
 
@@ -79,7 +79,7 @@ router.put("/:matchId", async (req, res, next) => {
     }
     res.status(200).json({message: "Match updated successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to update match'));
+    next(new AppError(500, 'Failed to update match', error));
   }
 });
 
@@ -92,7 +92,7 @@ router.delete("/:matchId", async (req, res, next) => {
     }
     res.status(200).json({message: "Match deleted successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to delete match'));
+    next(new AppError(500, 'Failed to delete match', error));
   }
 });
 
