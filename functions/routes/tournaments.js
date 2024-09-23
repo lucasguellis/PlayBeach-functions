@@ -23,7 +23,7 @@ router.get("/", async (req, res, next) => {
 
     res.status(200).json({tournaments: tournaments});
   } catch (error) {
-    next(new AppError(500, 'Failed finding tournaments'));
+    next(new AppError(500, 'Failed finding tournaments', error));
   }
 });
 
@@ -38,7 +38,7 @@ router.get("/:tournamentId", async (req, res, next) => {
 
     res.status(200).json({tournament: tournament});
   } catch (error) {
-    next(new AppError(500, 'Failed finding tournament'));
+    next(new AppError(500, 'Failed finding tournament', error));
   }
 });
 
@@ -61,7 +61,7 @@ router.post("/createTournament", async (req, res, next) => {
 
     res.status(201).json({message: "Tournament added successfully", id: tournamentRef.id});
   } catch (error) {
-    next(new AppError(500, 'Failed to add tournament'));
+    next(new AppError(500, 'Failed to add tournament', error));
   }
 });
 
@@ -79,7 +79,7 @@ router.put("/:tournamentId", async (req, res, next) => {
 
     res.status(200).json({message: "Tournament updated successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to update tournament'));
+    next(new AppError(500, 'Failed to update tournament', error));
   }
 });
 
@@ -94,7 +94,95 @@ router.delete("/:tournamentId", async (req, res, next) => {
 
     res.status(200).json({message: "Tournament deleted successfully"});
   } catch (error) {
-    next(new AppError(500, 'Failed to delete tournament'));
+    next(new AppError(500, 'Failed to delete tournament', error));
+  }
+});
+
+router.post("/:tournamentId/addCategory", async (req, res, next) => {
+  try {
+    const { tournamentId } = req.params;
+    const categoryData = req.body;
+
+    const updatedTournament = await TournamentController.addCategoryToTournament(tournamentId, categoryData);
+
+    if (!updatedTournament) {
+      return next(new AppError(404, 'Tournament not found'));
+    }
+
+    res.status(200).json({message: "Category added to tournament successfully"});
+  } catch (error) {
+    next(new AppError(500, 'Failed to add category to tournament', error));
+  }
+});
+
+router.get("/:tournamentId/categories", async (req, res, next) => {
+  try {
+    const { tournamentId } = req.params;
+    const name = req.query.name;
+
+    let categories;
+    if (name) {
+      categories = await TournamentController.getCategoriesByName(tournamentId, name);
+    } else {
+      categories = await TournamentController.getCategories(tournamentId);
+    }
+
+    if (!categories) {
+      return next(new AppError(404, 'No categories found for this tournament'));
+    }
+
+    res.status(200).json({categories: categories});
+  } catch (error) {
+    next(new AppError(500, 'Failed to get categories for tournament', error));
+  }
+});
+
+router.get("/:tournamentId/categories/:categoryId", async (req, res, next) => {
+  try {
+    const { tournamentId, categoryId } = req.params;
+
+    const category = await TournamentController.getCategoryById(tournamentId, categoryId);
+
+    if (!category) {
+      return next(new AppError(404, 'Category not found'));
+    }
+
+    res.status(200).json({category: category});
+  } catch (error) {
+    next(new AppError(500, 'Failed to get category for tournament', error));
+  }
+});
+
+router.delete("/:tournamentId/categories/:categoryId", async (req, res, next) => {
+  try {
+    const { tournamentId, categoryId } = req.params;
+
+    const deletedCategory = await TournamentController.deleteCategoryFromTournament(tournamentId, categoryId);
+
+    if (!deletedCategory) {
+      return next(new AppError(404, 'Category not found')); 
+    }
+
+    res.status(200).json({message: "Category deleted successfully"});
+  } catch (error) {
+    next(new AppError(500, 'Failed to delete category from tournament', error));
+  }
+});
+
+router.put("/:tournamentId/categories/:categoryId", async (req, res, next) => {
+  try {
+    const { tournamentId, categoryId } = req.params;
+    const updatedData = req.body;
+
+    const updatedCategory = await TournamentController.updateCategory(tournamentId, categoryId, updatedData);
+
+    if (!updatedCategory) {
+      return next(new AppError(404, 'Category not found'));
+    }
+
+    res.status(200).json({message: "Category updated successfully"});
+  } catch (error) {
+    next(new AppError(500, 'Failed to update category', error));
   }
 });
 

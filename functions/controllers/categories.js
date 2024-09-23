@@ -1,24 +1,33 @@
 const db = require("../config/database");
 const {formatObjectList, formatObject} = require("../utils/snapshotFormatter");
-
+const {logger} = require("firebase-functions");
 const collection = "categories";
-
-exports.getAllCategories = async () => {
-  const snapshot = await db.collection(collection).get();
-  return formatObjectList(snapshot);
-};
 
 exports.getCategoryByName = async (name) => {
   const nameLower = name.toLowerCase();
   const nameUpper = nameLower + '\uf8ff';
   
-  const snapshot = await db
-      .collection(collection)
-      .where("nameLower", ">=", nameLower)
-      .where("nameLower", "<=", nameUpper)
-      .get();
+  const tournamentsRef = db.collection("tournaments");
+  const snapshot = await tournamentsRef
+    .where("categories", "array-contains", {
+      nameLower: nameLower,
+    })
+    .get();
 
-  return formatObjectList(snapshot);
+  const results = [];
+  snapshot.forEach(doc => {
+    const tournament = doc.data();
+    const matchingCategories = tournament.categories.filter(
+      category => category.nameLower >= nameLower && category.nameLower <= nameUpper
+    );
+    results.push(...matchingCategories.map(category => ({
+      ...category,
+      tournamentId: doc.id,
+      tournamentName: tournament.name
+    })));
+  });
+
+  return results;
 };
 
 exports.getCategoryById = async (id) => {
@@ -32,12 +41,6 @@ exports.getCategoryById = async (id) => {
   }
 
   return formatObject(snapshot);
-};
-
-exports.createCategory = async (category) => {
-  category.nameLower = category.name.toLowerCase();
-  const snapshot = await db.collection(collection).add(category);
-  return snapshot;
 };
 
 exports.updateCategory = async (id, updatedData) => {

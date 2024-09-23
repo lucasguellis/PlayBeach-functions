@@ -50,7 +50,7 @@ class Tournament {
 
     // Should be an array of valid Category objects
     if (tournament.categories && (!Array.isArray(tournament.categories) || tournament.categories.some((category) => Category.validate(category).length > 0))) {
-      errors.push("Invalid categories");
+      errors.push("Invalid categories. Categories must be an array of valid Category objects");
     }
 
     // Must be a string
