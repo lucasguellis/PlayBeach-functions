@@ -1,3 +1,4 @@
+require("dotenv").config();
 const {onRequest} = require("firebase-functions/v2/https");
 const express = require("express");
 const userRoutes = require("./routes/users");

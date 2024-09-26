@@ -1,10 +1,10 @@
-const { logger } = require("firebase-functions");
+const {logger} = require("firebase-functions");
 
 class AppError extends Error {
   constructor(statusCode, message, error = null) {
     super(message);
     this.statusCode = statusCode;
-    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+    this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
     this.isOperational = true;
 
     logger.error(error);
@@ -15,9 +15,9 @@ class AppError extends Error {
 
 const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
+  err.status = err.status || "error";
 
-  logger.error('Error:', err);
+  logger.error("Error:", err);
 
   res.status(err.statusCode).json({
     status: err.status,
@@ -25,4 +25,4 @@ const errorHandler = (err, req, res, next) => {
   });
 };
 
-module.exports = { AppError, errorHandler };
+module.exports = {AppError, errorHandler};
