@@ -62,11 +62,13 @@ See [here](available_endpoints.md) the available endpoints of this API.
 
 Create a `.env` file in the functions directory with the following variables:
 
-```./.env
+```env
+// .env
 GOOGLE_APPLICATION_CREDENTIALS=./playbeach-credentials.json
 ```
 
-```./.functions/.env
+```env
+// ./functions/.env
 SECRET_KEY=SECRET_KEY
 ```
 
