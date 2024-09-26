@@ -56,5 +56,5 @@ exports.deleteMatch = async (id) => {
   }
 
   await matchRef.delete();
-  return { id };
+  return {id};
 };

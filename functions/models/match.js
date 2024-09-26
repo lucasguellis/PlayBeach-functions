@@ -27,7 +27,7 @@ class Match {
     const errors = [];
 
     // Must be a string and follow specific status types
-    const validStatuses = ['scheduling', 'scheduled', 'waiting', 'in progress', 'interrupted', 'suspended', 'finished', 'canceled', 'postponed', 'awaiting result', 'result confirmed', 'walkover', 'abandoned'];
+    const validStatuses = ["scheduling", "scheduled", "waiting", "in progress", "interrupted", "suspended", "finished", "canceled", "postponed", "awaiting result", "result confirmed", "walkover", "abandoned"];
     if (!match.status || !validStatuses.includes(match.status.toLowerCase())) {
       errors.push("Invalid or missing status");
     }

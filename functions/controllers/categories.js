@@ -5,25 +5,25 @@ const collection = "categories";
 
 exports.getCategoryByName = async (name) => {
   const nameLower = name.toLowerCase();
-  const nameUpper = nameLower + '\uf8ff';
-  
+  const nameUpper = nameLower + "\uf8ff";
+
   const tournamentsRef = db.collection("tournaments");
   const snapshot = await tournamentsRef
-    .where("categories", "array-contains", {
-      nameLower: nameLower,
-    })
-    .get();
+      .where("categories", "array-contains", {
+        nameLower: nameLower,
+      })
+      .get();
 
   const results = [];
-  snapshot.forEach(doc => {
+  snapshot.forEach((doc) => {
     const tournament = doc.data();
     const matchingCategories = tournament.categories.filter(
-      category => category.nameLower >= nameLower && category.nameLower <= nameUpper
+        (category) => category.nameLower >= nameLower && category.nameLower <= nameUpper,
     );
-    results.push(...matchingCategories.map(category => ({
+    results.push(...matchingCategories.map((category) => ({
       ...category,
       tournamentId: doc.id,
-      tournamentName: tournament.name
+      tournamentName: tournament.name,
     })));
   });
 
@@ -65,5 +65,5 @@ exports.deleteCategory = async (id) => {
   }
 
   await categoryRef.delete();
-  return { id };
+  return {id};
 };

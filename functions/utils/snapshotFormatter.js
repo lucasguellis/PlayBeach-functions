@@ -3,7 +3,7 @@ exports.formatObjectList = async (snapshot) => {
   return Promise.all(snapshot.docs.map(async (doc) => {
     const data = doc.data();
     const subcollections = await getSubcollections(doc.ref);
-    return { id: doc.id, ...data, ...subcollections };
+    return {id: doc.id, ...data, ...subcollections};
   }));
 };
 
@@ -11,7 +11,7 @@ exports.formatObject = async (snapshot) => {
   if (snapshot.empty) return null;
   const data = snapshot.data();
   const subcollections = await getSubcollections(snapshot.ref);
-  return { id: snapshot.id, ...data, ...subcollections };
+  return {id: snapshot.id, ...data, ...subcollections};
 };
 
 async function getSubcollections(docRef) {

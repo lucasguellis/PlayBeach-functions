@@ -10,14 +10,14 @@ exports.getAllUsers = async () => {
 
 exports.getUsersByName = async (name) => {
   const nameLower = name.toLowerCase();
-  const nameUpper = nameLower + '\uf8ff';
-  
+  const nameUpper = nameLower + "\uf8ff";
+
   const snapshot = await db
       .collection(collection)
       .where("nameLower", ">=", nameLower)
       .where("nameLower", "<=", nameUpper)
       .get();
-  
+
   return formatObjectList(snapshot);
 };
 
@@ -62,11 +62,11 @@ exports.deleteUser = async (id) => {
   }
 
   await userRef.delete();
-  return { id };
+  return {id};
 };
 
 exports.getPlacesByUserId = async (userId) => {
-  const user = await this.getUserById(userId)
+  const user = await this.getUserById(userId);
   const placesIds = Object.keys(user.places);
   return {placesIds: placesIds};
 };

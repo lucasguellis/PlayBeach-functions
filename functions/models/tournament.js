@@ -11,7 +11,7 @@ class Tournament {
       categories,
       organizer,
       maxParticipants,
-      currentParticipants
+      currentParticipants,
   ) {
     this.id = id;
     this.name = name;
@@ -34,7 +34,7 @@ class Tournament {
     }
 
     // Must be a string and follow specific status types
-    const validStatuses = ['open', 'planning', 'registrations open', 'registrations closed', 'in progress', 'paused', 'waiting for next phase', 'canceled', 'completed', 'results pending', 'results published'];
+    const validStatuses = ["open", "planning", "registrations open", "registrations closed", "in progress", "paused", "waiting for next phase", "canceled", "completed", "results pending", "results published"];
     if (!tournament.status || !validStatuses.includes(tournament.status.toLowerCase())) {
       errors.push("Invalid or missing status");
     }

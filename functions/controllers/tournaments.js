@@ -10,14 +10,14 @@ exports.getAllTournaments = async () => {
 
 exports.getTournamentsByName = async (name) => {
   const nameLower = name.toLowerCase();
-  const nameUpper = nameLower + '\uf8ff';
-  
+  const nameUpper = nameLower + "\uf8ff";
+
   const snapshot = await db
       .collection(collection)
       .where("nameLower", ">=", nameLower)
       .where("nameLower", "<=", nameUpper)
       .get();
-  
+
   return formatObjectList(snapshot);
 };
 
@@ -62,7 +62,7 @@ exports.deleteTournament = async (id) => {
   }
 
   await tournamentRef.delete();
-  return { id };
+  return {id};
 };
 
 exports.addCategoryToTournament = async (tournamentId, category) => {
@@ -74,15 +74,15 @@ exports.addCategoryToTournament = async (tournamentId, category) => {
   }
 
   category.nameLower = category.name.toLowerCase();
-  const categoryRef = await tournamentRef.collection('categories').add(category);
-  
+  const categoryRef = await tournamentRef.collection("categories").add(category);
+
   const updatedCategory = await categoryRef.get();
   return formatObject(updatedCategory);
 };
 
 exports.deleteCategoryFromTournament = async (tournamentId, categoryId) => {
   const tournamentRef = db.collection(collection).doc(tournamentId);
-  const categoryRef = tournamentRef.collection('categories').doc(categoryId);
+  const categoryRef = tournamentRef.collection("categories").doc(categoryId);
 
   const categorySnapshot = await categoryRef.get();
 
@@ -98,20 +98,20 @@ exports.deleteCategoryFromTournament = async (tournamentId, categoryId) => {
 
 exports.getCategoriesByTournamentId = async (tournamentId) => {
   const tournamentRef = db.collection(collection).doc(tournamentId);
-  const categoriesSnapshot = await tournamentRef.collection('categories').get();
+  const categoriesSnapshot = await tournamentRef.collection("categories").get();
 
   if (categoriesSnapshot.empty) {
     return [];
   }
 
-  return categoriesSnapshot.docs.map(doc => formatObject(doc));
+  return categoriesSnapshot.docs.map((doc) => formatObject(doc));
 };
 exports.getCategoriesByName = async (tournamentId, name) => {
   const tournamentRef = db.collection(collection).doc(tournamentId);
-  const categoriesRef = tournamentRef.collection('categories');
+  const categoriesRef = tournamentRef.collection("categories");
 
   const nameLower = name.toLowerCase();
-  const snapshot = await categoriesRef.where('nameLower', '>=', nameLower).where('nameLower', '<=', nameLower + '\uf8ff').get();
+  const snapshot = await categoriesRef.where("nameLower", ">=", nameLower).where("nameLower", "<=", nameLower + "\uf8ff").get();
 
   if (snapshot.empty) {
     return [];
@@ -122,7 +122,7 @@ exports.getCategoriesByName = async (tournamentId, name) => {
 
 exports.getCategories = async (tournamentId) => {
   const tournamentRef = db.collection(collection).doc(tournamentId);
-  const categoriesSnapshot = await tournamentRef.collection('categories').get();
+  const categoriesSnapshot = await tournamentRef.collection("categories").get();
 
   if (categoriesSnapshot.empty) {
     return [];
@@ -133,7 +133,7 @@ exports.getCategories = async (tournamentId) => {
 
 exports.getCategoryById = async (tournamentId, categoryId) => {
   const tournamentRef = db.collection(collection).doc(tournamentId);
-  const categoryRef = tournamentRef.collection('categories').doc(categoryId);
+  const categoryRef = tournamentRef.collection("categories").doc(categoryId);
   const categorySnapshot = await categoryRef.get();
 
   if (!categorySnapshot.exists) {
@@ -145,7 +145,7 @@ exports.getCategoryById = async (tournamentId, categoryId) => {
 
 exports.updateCategory = async (tournamentId, categoryId, updatedData) => {
   const tournamentRef = db.collection(collection).doc(tournamentId);
-  const categoryRef = tournamentRef.collection('categories').doc(categoryId);
+  const categoryRef = tournamentRef.collection("categories").doc(categoryId);
 
   const categorySnapshot = await categoryRef.get();
 

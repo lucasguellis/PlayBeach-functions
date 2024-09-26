@@ -10,14 +10,14 @@ exports.getAllPlaces = async () => {
 
 exports.getPlacesByName = async (name) => {
   const nameLower = name.toLowerCase();
-  const nameUpper = nameLower + '\uf8ff';
-  
+  const nameUpper = nameLower + "\uf8ff";
+
   const snapshot = await db
       .collection(collection)
       .where("nameLower", ">=", nameLower)
       .where("nameLower", "<=", nameUpper)
       .get();
-  
+
   return formatObjectList(snapshot);
 };
 
@@ -68,16 +68,16 @@ exports.deletePlace = async (id) => {
   }
 
   await placeRef.delete();
-  return { id };
+  return {id};
 };
 
 exports.getUsersByPlaceId = async (placeId) => {
   const placeRef = await this.getPlaceEntityById(placeId);
   const place = await formatObject(placeRef);
-  
+
   // Convert the users object to an array of user IDs
   const userIds = Object.keys(place.users);
 
-  
+
   return {userIds: userIds};
 };
